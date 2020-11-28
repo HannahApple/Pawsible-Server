@@ -7,57 +7,55 @@ const TEST_SEND_TO = process.env.PAWSIBLE_USER
 const SEND_TO = process.env.PAWSIBLE_EMAIL
 const sendTo = TEST_SEND_TO
 
-nodemailer.createTestAccount()
-.then((testAccount)=>{
-    let transporter = nodemailer.createTransport({
-        host: "Smtp.gmail.com",
-        port: 465,
-        secure: true, // true for 465, false for other ports
-        auth: {
-          user: process.env.PAWSIBLE_USER, // generated ethereal user
-          pass: process.env.PAWSIBLE_PASS, // generated ethereal password
-        },
-    })
-    app.use(cors())
-    
-    app.use(express.urlencoded({
-        extended: true
-    }))
-    
-    app.use(express.static('views'))
-    
-    
-    
-    // viewed at http://localhost:8080
-    app.get('/', function(req, res) {
-        res.sendFile(path.join(__dirname + '/views/index.html'));
-    });
-    
-    app.post('/contact-form', (req, res) => {
-        console.log('req.body', req.body) 
-        transporter.sendMail({
-            from: req.body.email, // sender address
-            to: sendTo,
-            subject: "It's Pawsible", // Subject line
-            text: createText(req.body),
-            html: htmlTemplate(req), // html body
-        })
-        .then(info=>{
-            console.log(info)
-            res.sendFile(path.join(__dirname + '/views/formsubmitted.html'));
-        })
-        .catch(console.error)
-    })
-    
-    app.listen(8080);
-    console.log("Server stared :)")
-    
-    
-    
-    function createText(data){
-        return JSON.stringify(data)
-    }
+
+let transporter = nodemailer.createTransport({
+    host: "Smtp.gmail.com",
+    port: 465,
+    secure: true, // true for 465, false for other ports
+    auth: {
+      user: process.env.PAWSIBLE_USER, // generated ethereal user
+      pass: process.env.PAWSIBLE_PASS, // generated ethereal password
+    },
 })
+app.use(cors())
+
+app.use(express.urlencoded({
+    extended: true
+}))
+
+app.use(express.static('views'))
+
+
+
+// viewed at http://localhost:8080
+app.get('/', function(req, res) {
+    res.sendFile(path.join(__dirname + '/views/index.html'));
+});
+
+app.post('/contact-form', (req, res) => {
+    console.log('req.body', req.body) 
+    transporter.sendMail({
+        from: req.body.email, // sender address
+        to: sendTo,
+        subject: "It's Pawsible", // Subject line
+        text: createText(req.body),
+        html: htmlTemplate(req), // html body
+    })
+    .then(info=>{
+        console.log(info)
+        res.sendFile(path.join(__dirname + '/views/formsubmitted.html'));
+    })
+    .catch(console.error)
+})
+
+app.listen(8080);
+console.log("Server stared :)")
+
+
+
+function createText(data){
+    return JSON.stringify(data)
+}
 function htmlTemplate(req){
     return `
         <h1>Hi Carol,</h1>
