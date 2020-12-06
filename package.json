@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "build": "docker build -t apple/its-pawsible .",
+    "start-docker": "docker run -p 80:8080 -d apple/its-pawsible"
   },
   "author": "Hannah Applebaum",
   "license": "ISC",
