@@ -6,6 +6,7 @@ const nodemailer = require("nodemailer");
 const TEST_SEND_TO = process.env.PAWSIBLE_USER
 const SEND_TO = process.env.PAWSIBLE_EMAIL
 const sendTo = TEST_SEND_TO
+const helmet = require("helmet");
 const https = require('https');
 const http = require('http');
 const fs = require('fs');
@@ -24,7 +25,7 @@ app.use(cors())
 app.use(express.urlencoded({
     extended: true
 }))
-
+app.use(helmet.hsts());
 app.use(express.static('views'))
 
 
@@ -50,7 +51,6 @@ app.post('/contact-form', (req, res) => {
     .catch(console.error)
 })
 
-app.listen(8080);
 console.log("Server stared :)")
 
 // Listen both http & https ports

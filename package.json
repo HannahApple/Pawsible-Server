@@ -7,13 +7,14 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
     "build": "docker build -t apple/its-pawsible .",
-    "start-docker": "docker run -p 80:8080 -d apple/its-pawsible"
+    "start-docker": "docker run -p 80:80 -p 443:443 -d apple/its-pawsible"
   },
   "author": "Hannah Applebaum",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "helmet": "^4.2.0",
     "nodemailer": "^6.4.16"
   }
 }
