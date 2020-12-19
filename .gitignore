@@ -1,5 +1,5 @@
 node_modules/
 
-ssl\server.crt
-ssl\server.csr
-ssl\server.key
+ssl/server.crt
+ssl/server.csr
+ssl/server.key
