@@ -6,6 +6,9 @@ const nodemailer = require("nodemailer");
 const TEST_SEND_TO = process.env.PAWSIBLE_USER
 const SEND_TO = process.env.PAWSIBLE_EMAIL
 const sendTo = TEST_SEND_TO
+const https = require('https');
+const http = require('http');
+const fs = require('fs');
 
 
 let transporter = nodemailer.createTransport({
@@ -18,13 +21,11 @@ let transporter = nodemailer.createTransport({
     },
 })
 app.use(cors())
-
 app.use(express.urlencoded({
     extended: true
 }))
 
 app.use(express.static('views'))
-
 
 
 // viewed at http://localhost:8080
@@ -33,6 +34,7 @@ app.get('/', function(req, res) {
 });
 
 app.post('/contact-form', (req, res) => {
+
     console.log('req.body', req.body) 
     transporter.sendMail({
         from: req.body.email, // sender address
@@ -50,6 +52,21 @@ app.post('/contact-form', (req, res) => {
 
 app.listen(8080);
 console.log("Server stared :)")
+
+// Listen both http & https ports
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer({
+  key: fs.readFileSync(__dirname + '/ssl/server.key'),
+  cert: fs.readFileSync(__dirname + '/ssl/server.crt'),
+}, app);
+
+httpServer.listen(80, () => {
+    console.log('HTTP Server running on port 80');
+});
+
+httpsServer.listen(443, () => {
+    console.log('HTTPS Server running on port 443');
+});
 
 
 
