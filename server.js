@@ -6,21 +6,43 @@ const nodemailer = require("nodemailer");
 const TEST_SEND_TO = process.env.PAWSIBLE_USER
 const SEND_TO = process.env.PAWSIBLE_EMAIL
 const sendTo = TEST_SEND_TO
+const REDIRECT_URL = process.env.PAWSIBLE_REDIRECT_URL
+const CLIENT_ID = process.env.PAWSIBLE_CLIENT_ID
+const CLIENT_SECRET = process.env.PAWSIBLE_CLIENT_SECRET
+const REFRESH_TOKEN = process.env.PAWSIBLE_REFRESH_TOKEN
 const helmet = require("helmet");
 const https = require('https');
 const http = require('http');
 const fs = require('fs');
+const { google } = require("googleapis");
+const OAuth2 = google.auth.OAuth2;
+const oauth2Client = new OAuth2(
+    CLIENT_ID, 
+    CLIENT_SECRET, 
+    REDIRECT_URL 
+);
 
+oauth2Client.setCredentials({
+    refresh_token: REFRESH_TOKEN
+});
+const accessToken = oauth2Client.getAccessToken()
 
-let transporter = nodemailer.createTransport({
-    host: "Smtp.gmail.com",
-    port: 465,
-    secure: true, // true for 465, false for other ports
+const transporter = nodemailer.createTransport({
+    service: "gmail",
     auth: {
-      user: process.env.PAWSIBLE_USER, // generated ethereal user
-      pass: process.env.PAWSIBLE_PASS, // generated ethereal password
+         type: "OAuth2",
+         user: TEST_SEND_TO, 
+         clientId: CLIENT_ID,
+         clientSecret: CLIENT_SECRET,
+         refreshToken: REFRESH_TOKEN,
+         accessToken: accessToken
     },
-})
+    tls: {
+        rejectUnauthorized: false
+      }
+});
+
+
 app.use(cors())
 app.use(express.urlencoded({
     extended: true
@@ -39,7 +61,7 @@ app.post('/contact-form', (req, res) => {
     console.log('req.body', req.body) 
     transporter.sendMail({
         from: req.body.email, // sender address
-        to: sendTo,
+        to: TEST_SEND_TO,
         subject: "It's Pawsible", // Subject line
         text: createText(req.body),
         html: htmlTemplate(req), // html body
